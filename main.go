@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"text/template"
 
 	"golang.org/x/oauth2"
 
@@ -68,6 +69,20 @@ func main() {
 	wg.Wait()
 }
 
+type post struct {
+	Title string
+	Date  string
+	Body  string
+}
+
+const jekyllTemplate = `--------------
+title: "{{.Title}}"
+date: {{.Date}}
+--------------
+
+{{.Body}}
+`
+
 func fetchComment(ctx context.Context, wg *sync.WaitGroup, client *github.Client, owner, repo string, issue *github.Issue) {
 	defer wg.Done()
 	log.Printf("start to fetch: %v\n", issue.GetNumber())
@@ -88,17 +103,17 @@ func fetchComment(ctx context.Context, wg *sync.WaitGroup, client *github.Client
 	}
 
 	astr := strings.Join(article, "\n\n")
-	//log.Printf("%v", astr)
 
 	title := issue.GetTitle()
 
 	created := issue.GetCreatedAt()
 
-	astr =
-		"-------------\n" +
-			"title: \"" + title + "\"\n" +
-			"date: " + created.Format("2006-01-02 15:04:05") + "\n" +
-			"-------------\n\n\n" + astr
+	tpl := template.Must(template.New("jekyll_template").Parse(jekyllTemplate))
+	p := post{
+		Title: title,
+		Date:  created.Format("2006-01-02 15:04:05"),
+		Body:  astr,
+	}
 
 	filename := created.Format("2006-01-02") + "-" + strings.Replace(title, " ", "-", -1)
 	f, err := os.Create("./articles/" + filename + ".md")
@@ -110,7 +125,11 @@ func fetchComment(ctx context.Context, wg *sync.WaitGroup, client *github.Client
 	defer f.Close()
 
 	w := bufio.NewWriter(f)
-	_, err = w.WriteString(astr)
+	if err := tpl.Execute(w, p); err != nil {
+		log.Printf("err: %v", err)
+		return
+	}
+
 	if err != nil {
 		// TODO: dump the number
 		log.Printf("err: %v", err)
