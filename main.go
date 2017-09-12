@@ -74,7 +74,9 @@ func fetchComment(ctx context.Context, wg *sync.WaitGroup, client *github.Client
 	astr := strings.Join(article, "\n\n")
 	//log.Printf("%v", astr)
 
-	filename := issue.GetCreatedAt().Format("2006-01-02T15_04_05")
+	title := issue.GetTitle()
+
+	filename := issue.GetCreatedAt().Format("2006-01-02") + "-" + strings.Replace(title, " ", "-", -1)
 	f, err := os.Create("./articles/" + filename + ".md")
 	if err != nil {
 		// TODO: dump the number
