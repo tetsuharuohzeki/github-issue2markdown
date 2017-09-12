@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"context"
+	"flag"
 	"log"
 	"os"
 	"strings"
@@ -14,6 +15,24 @@ import (
 )
 
 func main() {
+	var owner string
+	flag.StringVar(&owner, "owner", "", "The repository's owner name.")
+
+	var repo string
+	flag.StringVar(&repo, "repo", "", "The repository name.")
+
+	flag.Parse()
+
+	if owner == "" {
+		log.Println("Specify -owner flag correctly")
+		return
+	}
+
+	if repo == "" {
+		log.Println("Specify -repo flag correctly")
+		return
+	}
+
 	token := os.Getenv("OAUTH_TOKEN")
 	if token == "" {
 		log.Println("Set OAUTH_TOKEN envvar")
@@ -27,9 +46,6 @@ func main() {
 	)
 	tc := oauth2.NewClient(oauth2.NoContext, ts)
 	client := github.NewClient(tc)
-
-	var owner string = "karino2"
-	var repo string = "karino2.github.io"
 
 	ctx := context.Background()
 
