@@ -63,8 +63,9 @@ func fetchComment(ctx context.Context, wg *sync.WaitGroup, client *github.Client
 		log.Printf("err: %v", err)
 		return
 	}
-
-	article := make([]string, 0, 5)
+	article := []string{
+		issue.GetBody(),
+	}
 	for _, comment := range comments {
 		b := *comment.Body
 		article = append(article, b)
