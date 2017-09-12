@@ -1,0 +1,6 @@
+[[constraint]]
+  name = "github.com/google/go-github"
+  revision = "12126fbfe000a09047ebdeb2b5160be3af88ab9e"
+
+[[constraint]]
+  name = "golang.org/x/oauth2"
