@@ -75,10 +75,10 @@ type post struct {
 	Body  string
 }
 
-const jekyllTemplate = `--------------
+const jekyllTemplate = `---
 title: "{{.Title}}"
 date: {{.Date}}
---------------
+---
 
 {{.Body}}
 `
