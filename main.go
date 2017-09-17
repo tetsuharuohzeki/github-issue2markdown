@@ -87,8 +87,10 @@ func fetchComment(ctx context.Context, wg *sync.WaitGroup, client *github.Client
 	defer wg.Done()
 	log.Printf("start to fetch: %v\n", issue.GetNumber())
 
+	opt := &github.IssueListCommentsOptions{ListOptions: github.ListOptions{PerPage: 100}}
+
 	// All issues have their number. This would not be zero.
-	comments, _, err := client.Issues.ListComments(ctx, owner, repo, issue.GetNumber(), nil)
+	comments, _, err := client.Issues.ListComments(ctx, owner, repo, issue.GetNumber(), opt)
 	if err != nil {
 		// TODO: dump the number
 		log.Printf("err: %v", err)
