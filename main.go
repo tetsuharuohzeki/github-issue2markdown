@@ -6,6 +6,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"text/template"
@@ -117,7 +118,7 @@ func fetchComment(ctx context.Context, wg *sync.WaitGroup, client *github.Client
 		Body:  astr,
 	}
 
-	filename := created.Format("2006-01-02") + "-" + strings.Replace(title, " ", "-", -1)
+	filename := created.Format("2006-01-02") + "-" + strconv.Itoa(issue.GetNumber())
 	f, err := os.Create("./articles/" + filename + ".md")
 	if err != nil {
 		// TODO: dump the number
