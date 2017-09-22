@@ -17,3 +17,7 @@ run: $(DIST_NAME)
 
 $(DIST_NAME): clean
 	go build -o $(DIST_NAME)
+
+travis:
+	$(MAKE) bootstrap -C $(CURDIR)
+	$(MAKE) build -C $(CURDIR)
