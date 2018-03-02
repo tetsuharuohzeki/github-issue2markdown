@@ -90,13 +90,24 @@ func fetchComment(ctx context.Context, wg *sync.WaitGroup, client *github.Client
 
 	opt := &github.IssueListCommentsOptions{ListOptions: github.ListOptions{PerPage: 100}}
 
-	// All issues have their number. This would not be zero.
-	comments, _, err := client.Issues.ListComments(ctx, owner, repo, issue.GetNumber(), opt)
-	if err != nil {
-		// TODO: dump the number
-		log.Printf("err: %v", err)
-		return
+	var comments []*github.IssueComment
+	for {
+
+		// https://godoc.org/github.com/google/go-github/github#IssueListOptions
+		// All issues have their number. This would not be zero.
+		oneComments, resp, err := client.Issues.ListComments(ctx, owner, repo, issue.GetNumber(), opt)
+		if err != nil {
+			// TODO: dump the number
+			log.Printf("err: %v", err)
+			return
+		}
+		comments = append(comments, oneComments...)
+		if resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
 	}
+
 	article := []string{
 		issue.GetBody(),
 	}
