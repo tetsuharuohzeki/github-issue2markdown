@@ -52,7 +52,12 @@ func main() {
 	ctx := context.Background()
 
 	// TODO: may specify the since param by https://godoc.org/github.com/google/go-github/github#IssueListOptions
-	list, _, err := client.Issues.ListByRepo(ctx, owner, repo, nil)
+	opt := &github.IssueListByRepoOptions{
+		Sort:      "updated",
+		Direction: "desc",
+	}
+
+	list, _, err := client.Issues.ListByRepo(ctx, owner, repo, opt)
 	if err != nil {
 		log.Printf("could not get issue list")
 		log.Printf("err: %v", err)
